@@ -14,7 +14,7 @@ for i in range(len(grid)):
         elif grid[i][j] == -28: # E
             grid[i][j] = ord('z') - ord('a')
             t = (i, j)
-        elif grid[i][j] == 0: # a 
+        if grid[i][j] == 0: # a or S
             starts.append((i, j))
 print(grid)
 print(s, t)
