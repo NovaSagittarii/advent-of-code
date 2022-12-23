@@ -2,6 +2,9 @@ import math
 import sys
 lines = [l for l in sys.stdin]
 
+import time    
+epoch_time = time.time()
+
 directionText = "^v<>"
 directions = [ [(i,-1) for i in range(-1,2)], [(i,1) for i in range(-1,2)], [(-1,i) for i in range(-1,2)], [(1,i) for i in range(-1,2)] ]
 surround = set(x for y in directions for x in y)
@@ -92,3 +95,4 @@ while not completed:
 print(t)
 
 
+print("time taken", time.time()-epoch_time)
