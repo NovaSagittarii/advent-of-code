@@ -7,19 +7,18 @@ ans = 0
 for line in lines:
     words = line.split()
     id = int(words[1][:-1])
-    ok = True
+    prod = 1
+    limit = {
+        'red': 0,
+        'green': 0,
+        'blue': 0,
+    }
     for set in line.split(': ')[1].split('; '):
-        limit = {
-            'red': 12,
-            'green': 13,
-            'blue': 14,
-        }
         for xy in set.split(', '):
             x, col = xy.split()
-            limit[col] -= int(x)
-        for v in limit.values():
-            if v < 0:
-                ok = False
-    if ok: ans += id
+            limit[col] = max(limit[col], int(x))
+    for v in limit.values():
+        prod *= v
+    ans += prod
 
 print(ans)
