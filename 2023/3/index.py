@@ -7,6 +7,8 @@ a = lines
 n = len(lines)
 m = len(lines[0])
 
+gears = [[[] for _j in range(m)] for _i in range(n)]
+
 ans = 0
 for i in range(n):
     acc = ""
@@ -21,12 +23,13 @@ for i in range(n):
             ok = False
             for ni in range(i-1, i+2):
                 for nj in range(sj-1, j+1):
-                    if 0 <= ni < n and 0 <= nj < m and a[ni][nj] != '.' and a[ni][nj] not in DIGITS:
-                        ok = True
-            if ok:
-                ans += int(acc)
-                # print(acc)
+                    if 0 <= ni < n and 0 <= nj < m and a[ni][nj] == '*':
+                        gears[ni][nj].append(int(acc))
             # reset
             acc = ""
             sj = -1
+for row in gears:
+    for gear in row:
+        if len(gear) == 2:
+            ans += gear[0] * gear[1]
 print(ans)
