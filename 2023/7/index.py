@@ -12,20 +12,24 @@ for line in lines:
 	d = {}
 	cti = {
 		'T': 10,
-		'J': 11,
+		'J': 1,
 		'Q': 12,
 		'K': 13,
 		'A': 14,
 	}
+	jokers = 0
 	for c in hand:
 		if c not in d: d[c] = 0
-		d[c] += 1
+		if c == 'J': jokers += 1
+		else: d[c] += 1
 		if c.isdigit():
 			real_hand.append(int(c))
 		else:
 			real_hand.append(cti[c])
 	
+	
 	freq = sorted(d.values(), reverse=True)
+	freq[0] += jokers
 	# print(freq)
 	power = -1
 	if freq[0] == 5: power = 5
