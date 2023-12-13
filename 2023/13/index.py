@@ -14,14 +14,14 @@ for grid in grids:
     # vertical
     for t in range(0, n-1):
         k = t+0.5
-        ok = True
+        ok = 2
         for i in range(t+1):
             ni = int(k + (k-i))
             for j in range(m):
                 if 0 <= ni < n:
                     if grid[i][j] != grid[ni][j]:
-                        ok = False
-        if ok:
+                        ok -= 1
+        if ok == 1:
             w = t+1
             w *= 100
             break
@@ -29,14 +29,14 @@ for grid in grids:
     if w == -1:
         for t in range(0, m-1):
             k = t+0.5
-            ok = True
+            ok = 2
             for j in range(t+1):
                 nj = int(k + (k-j))
                 for i in range(n):
                     if 0 <= nj < m:
                         if grid[i][j] != grid[i][nj]:
-                            ok = False
-            if ok:
+                            ok -= 1
+            if ok == 1:
                 w = t+1
                 break
     # print('#', n, m)
