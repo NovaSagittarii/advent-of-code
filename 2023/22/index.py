@@ -36,13 +36,17 @@ def stick_translate(stick, offset):
     return tuple(tuple(stick_endpoint[i] + offset[i] for i in range(3)) for stick_endpoint in stick)
 
 can_remove = [True for i in sticks]
+adj = [[] for i in sticks]
+supports = [0 for i in sticks]
 for stick_id, stick in enumerate(sticks):
     for dz in range(1000):
+        on_floor = False
         can_fall = True
         resting_on = set()
         for i, j, k in stick_coords(stick_translate(stick, (0, 0, -dz-1))):
             if k < 0 or grid[i][j][k] >= 0:
                 can_fall = False
+                if k < 0: on_floor = True
                 if grid[i][j][k] >= 0:
                     resting_on.add(grid[i][j][k])
         if not can_fall:
@@ -54,6 +58,34 @@ for stick_id, stick in enumerate(sticks):
             if len(resting_on) == 1:
                 for other in resting_on:
                     can_remove[other] = False
+            for other in resting_on:
+                adj[other].append(stick_id)
+                supports[stick_id] += 1
+            if on_floor: supports[stick_id] += 42069
             break
 ans = sum(1 if x else 0 for x in can_remove)
+print(ans)
+
+# STR = "ABCDEFGHIJ"
+# for i, lst in enumerate(adj):
+#     print(STR[i], [STR[i] for i in lst])
+# print(supports)
+
+def accessible(u):
+    left = supports[::] # -1 denotes fallen
+    def dfs(u): # check if fallen
+        if left[u] != 0: return
+        left[u] = -1
+        for v in adj[u]: left[v] -= 1 # update
+        # print(u, left)
+        for v in adj[u]: dfs(v) # propagate
+    left[u] = 0
+    dfs(u)
+    return sum(1 if x == -1 else 0 for x in left)
+
+ans = 0
+for i, safe in enumerate(can_remove):
+    # print(i, safe, accessible(i))
+    if not safe:
+        ans += accessible(i)-1
 print(ans)
