@@ -8,17 +8,17 @@ for line in lines:
     p, v = [arrayint(x.split(', ')) for x in line.split(' @ ')]
     pts.append((*p, *v))
 
-from z3 import Int, Solver
+from z3 import BitVec, Solver
 
-t1 = Int('t1')
-t2 = Int('t2')
-t3 = Int('t3')
-rx = Int('rx')
-ry = Int('ry')
-rz = Int('rz')
-ex = Int('ex')
-ey = Int('ey')
-ez = Int('ez')
+t1 = BitVec('t1', 64)
+t2 = BitVec('t2', 64)
+t3 = BitVec('t3', 64)
+rx = BitVec('rx', 64)
+ry = BitVec('ry', 64)
+rz = BitVec('rz', 64)
+ex = BitVec('ex', 64)
+ey = BitVec('ey', 64)
+ez = BitVec('ez', 64)
 s = Solver()
 
 s.add(pts[0][0] + pts[0][3] * t1 == rx + ex * t1)
