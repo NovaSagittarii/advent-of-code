@@ -22,3 +22,13 @@ for i, x in enumerate(a):
     y = b[i]
     tot += abs(x-y)
 print(tot)
+
+tot2 = 0
+cts = {}
+for x in b:
+    if x not in cts: cts[x] = 0
+    cts[x] += 1
+for x in a:
+    if x not in cts: cts[x] = 0
+    tot2 += x * cts[x]
+print(tot2)
