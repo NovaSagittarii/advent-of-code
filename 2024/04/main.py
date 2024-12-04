@@ -17,6 +17,7 @@ n = len(A)
 m = len(A[0])
 
 tot = 0
+tot2 = 0
 for i in range(n):
     for j in range(m):
         for di, dj in DIRD:
@@ -28,4 +29,11 @@ for i in range(n):
                     if A[ni][nj] != c: ok = False
                 else: ok = False
             if ok: tot += 1
+        if A[i][j] == 'A' and i >= 1 and i < n-1 and j >= 1 and j < m-1:
+            w = ""
+            for di, dj in ((-1,-1),(-1,1),(1,1),(1,-1)):
+                w += A[i+di][j+dj]
+            if w in ("MMSS", "MSSM", "SSMM", "SMMS"):
+                tot2 += 1
 print(tot)
+print(tot2)
