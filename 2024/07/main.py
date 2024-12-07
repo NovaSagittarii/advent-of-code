@@ -21,6 +21,7 @@ for k, a in A:
         for w in dp:
             ndp.append(w + x)
             ndp.append(w * x)
+            ndp.append(int(f"{w}{x}"))
         dp = set(ndp)
     if k in dp:
         tot += k
