@@ -36,21 +36,19 @@ for i in range(n):
             for p in range(sz):
                 px, py = v[p]
                 pd = dist(i, j, px, py)
-                if pd == 0: continue
+                # if pd == 0: continue
                 for q in range(p+1, sz):
                     qx, qy = v[q]
                     qd = dist(i, j, qx, qy)
-                    if qd == 0: continue
+                    # if qd == 0: continue
                     if not is_collinear(i, j, px, py, qx, qy):
                         continue
-                    if pd == 2*qd or 2*pd == qd:
+                    if True: # pd == 2*qd or 2*pd == qd:
                         # print(i, j, px, py, qx, qy, k)
                         # tot += 1
                         if not ok:
                             # A[i][j] += k
-                            # if str(A[i][j]) == A[i][j]:
-                            #     A[i][j] = 0
-                            # A[i][j] += 1
+                            # A[i][j] = "#"
                             ok = True
                             break
                 if ok: break
