@@ -22,8 +22,9 @@ for i, c in enumerate(s):
     else:
         for j in range(int(c)):
             empty.append(len(a))
-            a.append(0)
+            a.append(-1)
 
+ap = a[::]
 n = len(a)
 i = n-1
 empty = empty[::-1]
@@ -37,11 +38,41 @@ while empty and exists:
     if i < j: continue
     # print(f"{i} => {j}")
     a[j] = a[i]
-    a[i] = 0
+    a[i] = -1
     heapq.heappush(exists, -j)
 
 # print(*a)
 ans = 0
 for i, x in enumerate(a):
-    ans += i * x
+    ans += i * max(0, x)
+print(ans)
+
+a = ap
+pos = [[0, 0]] # <start offset, sz>
+for i, c in enumerate(s):
+    c = int(c)
+    if i % 2 == 0:
+        pos[-1][1] = c # update size
+        pos.append([pos[-1][0] + c, 0])
+    else:
+        pos[-1][0] += c # update offset
+
+for w, sz in reversed(pos):
+    # print(*a)
+    l = -1
+    for i in range(w):
+        if a[i] == -1:
+            if l == -1:
+                l = i
+            if i-l+1 == sz: # do the move
+                for j in range(sz):
+                    a[l+j] = a[w+j]
+                    a[w+j] = -1
+        else:
+            l = -1
+
+# print(*a)
+ans = 0
+for i, x in enumerate(a):
+    ans += i * max(0, x)
 print(ans)
