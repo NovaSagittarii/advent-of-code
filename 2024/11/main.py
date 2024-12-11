@@ -26,7 +26,7 @@ for x in A:
     cts[x] += 1
     # print(x, process(x))
 
-for round in range(25):
+for round in range(75):
     ncts = {}
     for k, v in cts.items():
         for x in process(k):
