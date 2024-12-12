@@ -71,19 +71,40 @@ int main() {
       }
     }
     std::map<int, int> peri;
+    std::set<std::array<int, 5>> vis;
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < m; ++j) {
         int k = i*m + j;
         for (auto [di, dj] : dij) {
           int ni = i + di, nj = j + dj;
+          auto Ok = [&](int k) -> bool {
+            // if (a[i][j] == 'R') {
+            //   printf("  %i %i -> %i %i\n", i, j, ni, nj);
+            //   printf("? %i %i -> %i %i\n", i - dj, j - di, ni - dj, nj - di);
+            //   printf("? %i %i -> %i %i\n", i + dj, j + di, ni + dj, nj + di);
+            // }
+            if (vis.count({i - dj, j - di, ni - dj, nj - di, dsu.find(k)})
+              ||vis.count({i + dj, j + di, ni + dj, nj + di, dsu.find(k)})) {
+              // if (a[i][j] == 'R') printf("FAIL\n");
+              return false;
+            }
+            return true;
+          };
           if (ni < 0 || ni >= n || nj < 0 || nj >= m) {
-            ++peri[dsu.find(k)];
-            ++peri[dsu.find(k)];
+            // need to check swapped values and negative swap
+            if (Ok(k)) { 
+              ++peri[dsu.find(k)];
+              // ++peri[dsu.find(k)];
+            }
+            vis.insert({i, j, ni, nj, dsu.find(k)});
           } else if (a[i][j] != a[ni][nj]) {
-            int nk = ni*m + nj;
-            ++peri[dsu.find(k)];
-            ++peri[dsu.find(nk)];
+            if (Ok(k)) ++peri[dsu.find(k)];
+            // int nk = ni*m + nj;
+            // if (Ok(nk)) ++peri[dsu.find(nk)];
+            // vis.insert({i, j, ni, nj, dsu.find(nk)});
+            vis.insert({i, j, ni, nj, dsu.find(k)});
           }
+          
         }
       }
     }
@@ -93,7 +114,6 @@ int main() {
       for (int j = 0; j < m; ++j) {
         int k = i*m + j;
         if (dsu.find(k) == k) {
-          peri[k] /= 2;
           tot += dsu.size(k) * peri[k];
           std::cout << a[i][j] << "; ";
           std::cout << dsu.size(k) << " * " <<  peri[k];
