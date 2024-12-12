@@ -70,7 +70,7 @@ int main() {
         }
       }
     }
-    std::map<int, int> peri;
+    std::map<int, int> peri, peri2;
     std::set<std::array<int, 5>> vis;
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < m; ++j) {
@@ -78,30 +78,22 @@ int main() {
         for (auto [di, dj] : dij) {
           int ni = i + di, nj = j + dj;
           auto Ok = [&](int k) -> bool {
-            // if (a[i][j] == 'R') {
-            //   printf("  %i %i -> %i %i\n", i, j, ni, nj);
-            //   printf("? %i %i -> %i %i\n", i - dj, j - di, ni - dj, nj - di);
-            //   printf("? %i %i -> %i %i\n", i + dj, j + di, ni + dj, nj + di);
-            // }
+            // need to check swapped values and negative swap
             if (vis.count({i - dj, j - di, ni - dj, nj - di, dsu.find(k)})
               ||vis.count({i + dj, j + di, ni + dj, nj + di, dsu.find(k)})) {
-              // if (a[i][j] == 'R') printf("FAIL\n");
               return false;
             }
             return true;
           };
           if (ni < 0 || ni >= n || nj < 0 || nj >= m) {
-            // need to check swapped values and negative swap
+            ++peri[dsu.find(k)];
             if (Ok(k)) { 
-              ++peri[dsu.find(k)];
-              // ++peri[dsu.find(k)];
+              ++peri2[dsu.find(k)];
             }
             vis.insert({i, j, ni, nj, dsu.find(k)});
           } else if (a[i][j] != a[ni][nj]) {
-            if (Ok(k)) ++peri[dsu.find(k)];
-            // int nk = ni*m + nj;
-            // if (Ok(nk)) ++peri[dsu.find(nk)];
-            // vis.insert({i, j, ni, nj, dsu.find(nk)});
+            ++peri[dsu.find(k)];
+            if (Ok(k)) ++peri2[dsu.find(k)];
             vis.insert({i, j, ni, nj, dsu.find(k)});
           }
           
@@ -110,18 +102,21 @@ int main() {
     }
 
     ll tot = 0;
+    ll tot2 = 0;
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < m; ++j) {
         int k = i*m + j;
         if (dsu.find(k) == k) {
           tot += dsu.size(k) * peri[k];
-          std::cout << a[i][j] << "; ";
-          std::cout << dsu.size(k) << " * " <<  peri[k];
-          std::cout << " = " << dsu.size(k) * peri[k] << "\n";
+          tot2 += dsu.size(k) * peri2[k];
+        //   std::cout << a[i][j] << "; ";
+        //   std::cout << dsu.size(k) << " * " <<  peri[k];
+        //   std::cout << " = " << dsu.size(k) * peri[k] << "\n";
         }
       }
     }
-    std::cout << tot;
+    std::cout << tot << "\n";
+    std::cout << tot2;
 
     std::cout << std::endl;
   }
