@@ -3,6 +3,25 @@ Run regex on input
 
 FIND: (Button [AB]: )|([XY][+=])|(Prize: )|,
 REPLACE: 
+
+ax + by = c
+ax = c (mod b)
+x = a^-1 c (mod b)
+
+actually... im solving for...
+adx x + ady y = X
+bdx x + bdy y = Y
+
+[adx ady][x] = [X]
+[bdx bdy][y] = [Y]
+
+nvm it sorta still doesnt work
+
+https://math.stackexchange.com/questions/19528/integer-matrices-with-integer-inverses
+
+ah i wrote the matrix wrong...
+[adx bdx][a] = [X]
+[ady bdy][b] = [Y]
 */
 
 #include <bits/stdc++.h>
@@ -17,21 +36,6 @@ using namespace std;
 typedef long long ll;
 typedef pair<int, int> pii;
 typedef vector<int> vi;
-
-struct UF {
-	vi e;
-	UF(int n) : e(n, -1) {}
-	bool sameSet(int a, int b) { return find(a) == find(b); }
-	int size(int x) { return -e[find(x)]; }
-	int find(int x) { return e[x] < 0 ? x : e[x] = find(e[x]); }
-	bool join(int a, int b) {
-		a = find(a), b = find(b);
-		if (a == b) return false;
-		if (e[a] > e[b]) swap(a, b);
-		e[a] += e[b]; e[b] = a;
-		return true;
-	}
-};
 
 }
 
@@ -55,24 +59,27 @@ int main() {
   while (tn--) {
     ll tot = 0;
     
-    int adx, ady, bdx, bdy, X, Y;
+    ll adx, ady, bdx, bdy, X, Y;
     while (std::cin >> adx >> ady >> bdx >> bdy >> X >> Y) {
-      int MAX = X+Y+5;
-      int best = MAX;
-      for (int a = 0; a*adx <= X; ++a) {
-        if (a > 100) continue;
-        int ax = a*adx;
-        for (int b = 0; ax+b*bdx <= X; ++b) {
-          if (b > 100) continue;
-          int x = ax + b*bdx;
-          int y = a*ady + b*bdy;
-          if (x == X && y == Y) {
-            setmin(best, 3*a+b);
-          }
-        }
+      X += 10000000000000;
+      Y += 10000000000000;
+      
+      ll a = adx, b = ady, c = bdx, d = bdy;
+      std::swap(b, c); // oops
+      ll det = a*d - b*c;
+      ll ai = d, bi = -b, ci = -c, di = a;
+      if (det == 0) {
+        std::cout << "fail\n"; continue;
       }
-      std::cout << best << "\n";
-      if (best != MAX) tot += best;
+      ll x = (ai * X + bi * Y);// / det;
+      ll y = (ci * X + di * Y);// / det;
+      // std::cout << std::fixed << std::setprecision(2);
+      // std::cout << x << " " << y << "\n";
+      if (x % det == 0 && y % det == 0) {
+        x/=det; y/=det;
+        std::cout << x << " " << y << "\n";
+        tot += 3*x + y;
+      } else std::cout<<"no\n";
     }
     std::cout << tot;
     
