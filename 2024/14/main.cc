@@ -42,26 +42,45 @@ int main() {
     std::vector<int> ans(4, 0);
 
     const int w = 101, h = 103;
-    for (auto [x, y, dx, dy] : a) {
-      x += dx*100;
-      y += dy*100;
-      x %= w;
-      y %= h;
-      x += w;
-      y += h;
-      x %= w;
-      y %= h;
-      if (x == w/2 || y == h/2) continue;
-      int q = (x < w/2)*2 + (y < h/2);
-      ++ans[q];
-    }
+    int best = 0;
+    v2i b(h, vi(w, -1));
+    for (int T = 0; T < 1000000; ++T) {
+      if ((T&2047) == 2047) {
+        std::cerr << T << " ";
+        std::cerr << best << std::endl;
+      }
+      // do 500*500 check
+      int near = 0;
+      for (auto [x, y, dx, dy] : a) {
+        x += dx*T;
+        y += dy*T;
+        x %= w;
+        y %= h;
+        x += w;
+        y += h;
+        x %= w;
+        y %= h;
+        b[y][x] = T;
+        if (x-1 >= 0 && b[y][x-1] == T && x+1 < w && b[y][x+1] == T) ++near;
+        // if (x+1 < w && b[y][x+1] == T) ++near;
+        // if (y-1 >= 0 && b[y-1][x] == T) ++near;
+        // if (y+1 < h && b[y+1][x] == T) ++near;
+      }
+      setmax(best, near);
+      if (near < 60) continue;
+      std::cout << "ok=" << near << "\n";
 
-    ll tot = 1;
-    for (auto x : ans) {
-      std::cout << x << " ";
-      tot *= x;
+      std::cout << T << "\n";
+      for (int i = 0; i < h; ++i) {
+        for (int j = 0; j < w; ++j) {
+          char c = ' ';
+          if (b[i][j] == T) c = '#';
+          std::cout << c;
+        }
+        std::cout << "\n";
+      }
+      std::cout << std::endl;
     }
-    std::cout << tot;
 
     std::cout << std::endl;
   }
