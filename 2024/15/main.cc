@@ -26,7 +26,13 @@ int main() {
     std::vector<std::string> a;
     while (std::cin >> line) {
       if (line == "newline") break;
-      a.push_back(line);
+      a.push_back("");
+      for (auto c : line) {
+        if (c == '#') a.back() += "##";
+        else if (c == 'O') a.back() += "[]";
+        else if (c == '@') a.back() += "@.";
+        else if (c == '.') a.back() += "..";
+      }
     }
     
     std::string b;
@@ -48,14 +54,56 @@ int main() {
     
     auto OkMove = [&](int i, int j, int di, int dj, auto&& dfs) -> bool {
       if (a[i][j] == '#') return false;
-      if (a[i][j] != '.') return dfs(i + di, j + dj, di, dj, dfs);
+      if (a[i][j] == '@') return dfs(i + di, j + dj, di, dj, dfs);
+      if (a[i][j] == '[') {
+        if (di) {
+          return dfs(i + di, j + dj, di, dj, dfs) && dfs(i + di, j + 1 + dj, di, dj, dfs);
+        } else {
+          return dfs(i + di, j + dj, di, dj, dfs);
+        }
+      }
+      if (a[i][j] == ']') {
+        if (di) {
+          return dfs(i + di, j + dj, di, dj, dfs) && dfs(i + di, j - 1 + dj, di, dj, dfs);
+        } else {
+          return dfs(i + di, j + dj, di, dj, dfs);
+        }
+      }
       return true; // O @
     };
     auto Push = [&](int i, int j, int di, int dj, auto&& dfs) -> void {
       // assume OKMove passed
       // if (a[i][j] == '#') return;
-      if (a[i+di][j+dj] != '.') dfs(i + di, j + dj, di, dj, dfs);
-      std::swap(a[i][j], a[i + di][j + dj]);
+      if (a[i][j] == '@') {
+        dfs(i + di, j + dj, di, dj, dfs);
+        a[i + di][j + dj] = a[i][j];
+      } else {
+        if (a[i][j] == '[') {
+          if (di) {
+            dfs(i + di, j + dj, di, dj, dfs);
+            dfs(i + di, j + 1 + dj, di, dj, dfs);
+            a[i + di][j + dj] = a[i][j];
+            a[i + di][j+1 + dj] = a[i][j+1];
+            a[i][j+1] = a[i][j] = '.';
+          } else {
+            dfs(i + di, j + dj, di, dj, dfs);
+            a[i + di][j + dj] = a[i][j];
+          }
+        }
+        if (a[i][j] == ']') {
+          if (di) {
+            dfs(i + di, j + dj, di, dj, dfs);
+            dfs(i + di, j - 1 + dj, di, dj, dfs);
+            a[i + di][j + dj] = a[i][j];
+            a[i + di][j-1 + dj] = a[i][j-1];
+            a[i][j-1] = a[i][j] = '.';
+          } else {
+            dfs(i + di, j + dj, di, dj, dfs);
+            a[i + di][j + dj] = a[i][j];
+          }
+        }
+      }
+      a[i][j] = '.';
     };
     
     for (auto c : b) {
@@ -79,7 +127,7 @@ int main() {
     ll tot = 0;
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < m; ++j) {
-        if (a[i][j] == 'O') {
+        if (a[i][j] == '[') {
           tot += i*100 + j;
         }
       }
