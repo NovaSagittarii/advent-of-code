@@ -21,14 +21,12 @@ for q in Q:
         for a in A:
             if i+len(a) > n: continue
             ok = True
-            for j, c in enumerate(list(a)):
+            for j, c in enumerate(a):
                 if q[i+j] != c:
                     ok = False
                     break
             if ok:
-                dp[i + len(a)] = 1
-    print(q, dp[-1])
-    # print(dp)
-    if dp[-1]:
-        ans += 1
+                dp[i + len(a)] += dp[i]
+    # print(q, dp[-1])
+    ans += dp[-1]
 print(ans)
