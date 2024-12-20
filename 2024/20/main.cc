@@ -77,23 +77,36 @@ int main() {
       }
       return ret;
     };
+    std::set<std::array<int, 4>> vis;
     auto Cheat = [&](int i1, int j1, int i2, int j2) -> void {
+      std::array<int, 4> k = {i1, j1, i2, j2};
+      if (vis.count(k)) return;
+      vis.insert(k);
+
       int ret = T;
-      if (a[i1][j1] != '#') return;
+      if (a[i1][j1] == '#') return; // i also misread :skull:
       if (a[i2][j2] == '#') return; // ah i misread
-      int res = 3 + MinSurround(i1, j1, ds) + MinSurround(i2, j2, de);
+      int res = 1 + 1 + std::abs(i1-i2) + std::abs(j1-j2) + MinSurround(i1, j1, ds) + MinSurround(i2, j2, de);
+      if (i1 == si && j1 == sj) res -= 2;
       if (i2 == ti && j2 == tj) res -= 2;
       setmin(ret, res);
       if (ret != T) ++cts[T-ret];
       // if (i1 == 7 && j1 == 6) printf("save %i %i, %i %i; %i \n", i1, j1, i2, j2, T-ret);
       // if (T-ret == 64) printf("save %i %i, %i %i\n", i1, j1, i2, j2);
+      // if (T-ret == 76) printf("save %i %i, %i %i\n", i1, j1, i2, j2);
     };
     for (int i = 1; i < n-1; ++i) {
       for (int j = 1; j < m-1; ++j) {
-        for (auto [di, dj] : dij) Cheat(i, j, i + di, j + dj);
+        for (int i2 = i-21; i2 <= i+21; ++i2) {
+          for (int j2 = j-21; j2 <= j+21; ++j2) {
+            if (i2 < 0 || i2 >= n || j2 < 0 || j2 >= m) continue;
+            if (std::abs(i-i2) + std::abs(j-j2) > 20) continue;
+            Cheat(i, j, i2, j2);
+          }
+        }
       }
     }
-    // for (auto [k, v] : cts) std::cout << k << ": " << v << "\n";
+    for (auto [k, v] : cts) std::cout << k << ": " << v << "\n";
     int tot = 0;
     for (auto [k, v] : cts) {
       if (k >= 100) tot += v;
