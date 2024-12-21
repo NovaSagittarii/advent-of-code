@@ -1,5 +1,46 @@
 /*
-err suppose you found the best sequence 
+err suppose you found a best sequence 
+can you just extend this sequence? to get a new best sequence??
+
+i just realize that 3**25 is just NOT happening
+
+suppose you wanted to press 1 2 3
+then the alias for this is
+(move to 1) A > A > A
+and the alias for this... is uh
+(*move to 1)
+(move to A) A   <- specifically in this section YOU HAVE NO CHOICE
+(move to >) A
+(move to A) A
+(move to >) A
+(move to A) A   <- also you start on A and end on A
+
+this move back to A makes it somewhat easier to deal with
+
+so all you gotta do is generate a couple of tier0 path and run them
+actually here's the matrix for going doing <^>vA using <^>vA
+
+    +---+---+
+    | ^ | A |
++---+---+---+
+| < | v | > |
++---+---+---+
+             ^ > v < A
+^ ~ <A>      0 1 0 1 1
+> ~ vA^      1 0 1 0 1
+v ~ <vA^>    1 1 1 1 1
+< ~ <<vA^>>  1 2 1 2 1
+A ~ A        0 0 0 0 1
+
+^ ^ A v v A
+
+< AA >A v< AA ^> A
+  ^ no need to go back here actually...
+
+so maybe you need all pairs, a node is now...
+- [KEY] -> [KEY] 
+- A presses
+???
 */
 
 #include <bits/stdc++.h>
@@ -13,7 +54,12 @@ typedef std::vector<v2i> v3i;
 #define setmax(a, b) a = std::max(a, b);
 #define setmin(a, b) a = std::min(a, b);
 
-const std::vector<std::array<int, 2>> dij {{0,-1}, {-1,0}, {0,1}, {1,0}};
+const std::vector<std::array<int, 2>> dij {
+  {-1, 0},
+  {0, 1},
+  {1, 0},
+  {0, -1},
+};
 
 int main() {
   std::ios_base::sync_with_stdio(false);
@@ -46,109 +92,70 @@ int main() {
         {'<', {0, -1}},
       };
 
-      // const int howmuchpain = 2;
-      const int howmuchpain = 8; // 1 minute for 5 tests
-      const int nodeSize = 1+(1+howmuchpain)*2;
-      typedef std::array<int, nodeSize> node;
+      const int howmuchpain = 1;
+      // const int howmuchpain = 8;
+      typedef std::array<int, 5> a5int;
+      typedef std::tuple<int, std::array<int, 2>, a5int> node;
       std::queue<node> q;
-      std::set<node> vis;
-      node init;
-      init[0] = 0;
-      init[1] = 3;
-      init[2] = 2;
-      for (int i = 3; i < nodeSize; i += 2) {
-        init[i] = 0;
-        init[i+1] = 2;
-      }
-      q.push(init);
-      auto InsertIfValid = [&](const node& u) -> void {
-        for (int k = nodeSize-2; k > 2; k -= 2) {
-          // go from the back since those change more frequently
-          int i = u[k];
-          int j = u[k+1];
-          if (i < 0 || i >= 2) return;
-          if (j < 0 || j >= 3) return;
-          if (b[i][j] == '.') return;
-        }
-        int i1 = u[1];
-        int j1 = u[2];
-        if (i1 < 0 || i1 >= 4) return;
-        if (j1 < 0 || j1 >= 3) return;
-        if (a[i1][j1] == '.') return;
-        q.push(std::move(u));
-      };
-
-      int best = 0;
-      for (int depth = 0; !q.empty(); ++depth) {
+      q.push({0, {3, 2}, {0, 0, 0, 0, (int)s.size()}});
+      std::vector<a5int> candidate;
+      bool done = false;
+      for (int depth = 0; !q.empty() && !done; ++depth) {
         int qn = q.size();
         while (qn--) {
-          auto k = q.front();
+          auto [prog, ij, u] = q.front();
           q.pop();
-          const int p = k[0];
-          if (p < best) continue;
-          else best = p;
-          if (vis.count(k)) continue;
-          vis.insert(k);
-          // auto [p, i1, j1, i2, j2, i3, j3] = k;
-          // std::cerr << p << "; " << i3 << " " << j3 << std::endl;
-          if (p == s.size()) {
-            std::cout << s << ": " << depth << std::endl;
-            std::istringstream in(s);
-            int w;
-            in >> w;
-            ans += depth * w;
+          auto [i, j] = ij;
+          if (i < 0 || i >= 4 || j < 0 || j >= 3 || a[i][j] == '.') continue;
+          if (a[i][j] == s[prog]) {
+            ++prog; // yay a match
+            // could be a while but no repeated in input
+          }
+          if (prog == s.size()) {
+            candidate.push_back(u);
+            done = true;
+            // continue;
             break;
           }
-
-          // press directional
-          for (auto [di, dj] : dij) {
-            auto v = k;
-            v[nodeSize-2] += di;
-            v[nodeSize-1] += dj;
-            InsertIfValid(v);
+          // try moving a bit
+          for (int d = 0; d < 4; ++d) {
+            auto [di, dj] = dij[d];
+            auto dirs = u;
+            ++dirs[d];
+            q.push({prog, {i + di, j + dj}, dirs});
           }
-
-          // press A
-          auto dfs = [&](int lv, auto&& dfs) -> void {
-            int i = k[lv];
-            int j = k[lv+1];
-            if (lv == 1) { // BASE CASE WOOHOO
-              char c = a[i][j];
-              if (s[p] == c) {
-                ++k[0];
-                InsertIfValid(k);
-              }
-            } else {
-              char c = b[i][j];
-              if (c == 'A') {
-                dfs(lv-2, dfs);
-              } else {
-                auto [di, dj] = mdij[c];
-                auto v = k;
-                v[lv-2] += di;
-                v[lv-2+1] += dj;
-                InsertIfValid(v);
-              }
-            } 
-          };
-          dfs(nodeSize-2, dfs);
-          // char c = b[i3][j3];
-          // if (c == 'A') {
-          //   c = b[i2][j2];
-          //   if (c == 'A') {
-          //     if (s[p] == a[i1][j1]) {
-          //       InsertIfValid({p+1, i1, j1, i2, j2, i3, j3});
-          //     }
-          //   } else {
-          //     auto [di, dj] = mdij[c];
-          //     InsertIfValid({p, i1+di, j1+dj, i2, j2, i3, j3});
-          //   }
-          // } else {
-          //   auto [di, dj] = mdij[c];
-          //   InsertIfValid({p, i1, j1, i2+di, j2+dj, i3, j3});
-          // }
         }
       }
+      auto u = candidate[0];
+      for (auto x : u) std::cout << x << " ";
+      std::cout << std::endl;
+      for (int i = 0; i < howmuchpain; ++i){
+        /**
+         *              ^ > v < A
+         * ^ ~ <A>A     0 1 0 1 2
+         * > ~ vA^A     1 0 1 0 2
+         * v ~ <vA^>A   1 1 1 1 2
+         * < ~ <<vA^>>A 1 2 1 2 2
+         * A ~ A        0 0 0 0 1
+         */
+        auto [w, d, s, a, A] = u;
+        a5int v = {
+          d + s + a,
+          w + s + a*2,
+          d + s + a,
+          w + s + a*2,
+          1*(w+s+a+d) + A,
+        };
+        u = v;
+      }
+
+      ll tot = 0;
+      for (auto x : u) tot += x;
+      std::cout << s << ": " << tot << std::endl;
+      std::istringstream in(s);
+      int w;
+      in >> w;
+      ans += tot * w;
     }
     std::cout << ans;
 
