@@ -31,33 +31,23 @@ for u in adj.keys(): # start
 # print(vis)
 print(len(vis))
 
-# co, de, ka, and ta.
+"""
+k=12 clique did not work
+LOWERBOUND: k=13
+UPPERBOUND: k=15 (every node has degree 14)
+"""
 
-best = []
-def dfs(prev): # maximal clique search
-    u = prev[-1]
-    global best
-    if len(prev) > len(best):
-        best.clear()
-        for u in prev: best.append(u)
-        print(",".join(sorted(best)))
-        # best = prev # this doesnt work???
-    for v in adj[u]:
-        if v in prev: continue
+from itertools import combinations
+for u in adj.keys():
+    n = len(adj[u])
+    for v in combinations(adj[u], 12):
+        # and everything gotta be connected
+        v = list(v) + [u]
         ok = True
-        for req in prev:
-            if req not in adj[v]:
+        for x, y in combinations(v, 2):
+            if y not in adj[x]:
                 ok = False
                 break
         if ok:
-            prev.append(v)
-            dfs(prev)
-            prev.pop()
-for i, tri in enumerate(vis):
-    print(f"{i} of {len(vis)}")
-    t1, t2, t3 = tri
-    # suppose t1 t2 t3 are in a clique
-    dfs([t1, t2, t3])
-    dfs([t2, t3, t1])
-    dfs([t3, t1, t2])
-print(",".join(sorted(best)))
+            print(','.join(sorted(list(v))))
+            
