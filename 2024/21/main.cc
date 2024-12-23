@@ -1,4 +1,49 @@
 /*
+
+IN
+
+6A
+836A
+540A
+965A
+480A
+789A
+
+
+OUT
+
+836A
+836A: 30
+540A
+540A: 30
+965A
+965A: 28
+480A
+480A: 30
+789A
+789A: 28
+104792 -- 1
+
+836A
+836A: 70
+540A
+540A: 72
+965A
+965A: 66
+480A
+480A: 74
+789A
+789A: 66
+248684 -- 2
+
+8: 57386004
+
+30 70 170 426 1050 2618
+30 72 184 446 1120 2772
+28 66 160 398 982 2442
+30 74 182 444 1106 2734
+28 66 164 396 990 2436
+
 err suppose you found a best sequence 
 can you just extend this sequence? to get a new best sequence??
 
@@ -40,7 +85,11 @@ A ~ A        0 0 0 0 1
 so maybe you need all pairs, a node is now...
 - [KEY] -> [KEY] 
 - A presses
-???
+
+(looked at subreddit)
+oh i overlooked the top-down recurrence the entire time...
+that f([pos] -> [pos], lv) can be defined in terms of
+f(..., lv-1)
 */
 
 #include <bits/stdc++.h>
@@ -94,11 +143,11 @@ int main() {
 
       const int howmuchpain = 1;
       // const int howmuchpain = 8;
-      typedef std::array<int, 5> a5int;
-      typedef std::tuple<int, std::array<int, 2>, a5int> node;
+      
+      typedef std::tuple<int, std::array<int, 2>, std::string> node;
       std::queue<node> q;
-      q.push({0, {3, 2}, {0, 0, 0, 0, (int)s.size()}});
-      std::vector<a5int> candidate;
+      q.push({0, {3, 2}, ""});
+      std::vector<std::string> candidate;
       bool done = false;
       for (int depth = 0; !q.empty() && !done; ++depth) {
         int qn = q.size();
@@ -114,8 +163,8 @@ int main() {
           if (prog == s.size()) {
             candidate.push_back(u);
             done = true;
-            // continue;
-            break;
+            continue;
+            // break;
           }
           // try moving a bit
           for (int d = 0; d < 4; ++d) {
