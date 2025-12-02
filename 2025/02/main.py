@@ -14,8 +14,12 @@ for lr in ranges:
     l, r = map(int, lr.split('-'))
     for x in range(l, r+1):
         x = str(x)
-        h = len(x)//2
-        if len(x)%2 == 0 and x[:h] == x[h:]:
-            ans += int(x)
+        for k in range(2, len(x)+1):
+            if len(x) % k == 0:
+                h = len(x) // k
+                if x == (x[:h] * k):
+                    ans += int(x)
+                    # print(x)
+                    break
 print(ans)
 
