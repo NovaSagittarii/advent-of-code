@@ -9,6 +9,7 @@ SLOPE = list(">v<^")
 DIR = ((0, 1), (1, 0), (0, -1), (-1, 0))
 
 ranges = ("".join(lines)).split(',')
+ans1 = 0
 ans = 0
 for lr in ranges:
     l, r = map(int, lr.split('-'))
@@ -18,8 +19,9 @@ for lr in ranges:
             if len(x) % k == 0:
                 h = len(x) // k
                 if x == (x[:h] * k):
+                    if k == 2: ans1 += int(x)
                     ans += int(x)
                     # print(x)
                     break
+print(ans1)
 print(ans)
-
