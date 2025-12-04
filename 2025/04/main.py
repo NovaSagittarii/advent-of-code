@@ -18,17 +18,22 @@ n = len(A)
 
 # for x in A: print(*x)
 ans = 0
-for i in range(1, n-1):
-    for j in range(1, m-1):
-        if A[i][j] != '@': continue
-        ct = 0
-        for di in range(-1, 2):
-            for dj in range(-1, 2):
-                if not di and not dj: continue
-                ni = i + di
-                nj = j + dj
-                if A[ni][nj] == '@':
-                    ct += 1
-        if ct < 4:
-            ans += 1
+busy = True
+while busy:
+    busy = False 
+    for i in range(1, n-1):
+        for j in range(1, m-1):
+            if A[i][j] != '@': continue
+            ct = 0
+            for di in range(-1, 2):
+                for dj in range(-1, 2):
+                    if not di and not dj: continue
+                    ni = i + di
+                    nj = j + dj
+                    if A[ni][nj] == '@':
+                        ct += 1
+            if ct < 4:
+                ans += 1
+                A[i][j] = '.'
+                busy = True
 print(ans)
