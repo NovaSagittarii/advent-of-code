@@ -60,6 +60,12 @@ for d, p, q in edges[:1000]:
     dsu.union(p, q)
 
 b = sorted([dsu.size[i] for i in range(n) if i == dsu.find(i)], reverse=True)
-print(b)
-x, y, z, *a = b
+# print(b)
+x, y, z, *rest = b
 print(x * y * z)
+
+for d, p, q in edges:
+    dsu.union(p, q)
+    if dsu.size[dsu.find(p)] == n:
+        print(a[p][0] * a[q][0])
+        break
