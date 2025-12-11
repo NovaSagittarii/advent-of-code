@@ -24,18 +24,20 @@ for u in adj.keys():
 
 vis = set()
 
-@functools.lru_cache(maxsize=None)
-def dfs(u, prev) -> int:
-    # print(u)
-    if u == "you":
-        return 1
-    ret = 0
-    for v in radj[u]:
-        if v == prev:
-            continue  # needed?
-        assert v not in vis, "LOOP??"
-        vis.add(v)
-        ret += dfs(v, u)
-        vis.remove(v)
-    return ret
-print(dfs("out", None))
+def calc(s, t) -> int:
+    @functools.lru_cache(maxsize=None)
+    def dfs(u) -> int:
+        # print(u)
+        if u == s:
+            return 1
+        ret = 0
+        for v in radj[u]:
+            assert v not in vis, "LOOP??"
+            vis.add(v)
+            ret += dfs(v)
+            vis.remove(v)
+        return ret
+    return dfs(t)
+
+print(calc("you", "out"))
+print(calc("svr", "fft") * calc("fft", "dac") * calc("dac", "out"))
