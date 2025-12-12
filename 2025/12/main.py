@@ -20,6 +20,7 @@ for q in queries.split("\n"):
     wei = [5, 7, 6, 8, 8, 7]  # hardcoded lol (how many # in a block)
     req = sum(x * y for x, y in zip(order, wei))
     if req < n * m:
+        assert 9 * sum(order) <= n * m, "Sloppy solution?"
         ans += 1
     # print(n * m - req)
 print(ans)
